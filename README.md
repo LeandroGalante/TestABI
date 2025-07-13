@@ -1,5 +1,13 @@
 # Developer Evaluation Project
 
+## 🚀 Quick Start
+
+**Want to run the Sales API immediately?** 
+
+👉 **[Quick Start Guide](./template/backend/QUICK_START.md)** - Get up and running in minutes!
+
+---
+
 `READ CAREFULLY`
 
 ## Instructions
