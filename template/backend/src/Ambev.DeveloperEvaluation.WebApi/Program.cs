@@ -38,7 +38,6 @@ public class Program
             {
                 if (builder.Environment.IsDevelopment())
                 {
-                    // Use in-memory database for development to avoid connection issues
                     options.UseInMemoryDatabase("DeveloperEvaluation");
                 }
                 else

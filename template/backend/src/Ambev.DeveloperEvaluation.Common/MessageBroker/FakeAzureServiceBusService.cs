@@ -33,9 +33,6 @@ public class FakeAzureServiceBusService : IMessageBrokerService
     {
         try
         {
-            // In a real implementation, this would publish to Azure Service Bus
-            // For demo purposes, we're just logging the message
-            
             var messageId = Guid.NewGuid();
             var messageBody = JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions 
             { 
