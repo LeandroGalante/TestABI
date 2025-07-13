@@ -3,6 +3,8 @@ using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Common.MessageBroker;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
@@ -13,16 +15,19 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IMessageBrokerService _messageBrokerService;
 
     /// <summary>
     /// Initializes a new instance of UpdateSaleHandler
     /// </summary>
     /// <param name="saleRepository">The sale repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    /// <param name="messageBrokerService">The message broker service for publishing events</param>
+    public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMessageBrokerService messageBrokerService)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _messageBrokerService = messageBrokerService;
     }
 
     /// <summary>
@@ -42,10 +47,6 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (sale == null)
             throw new InvalidOperationException($"Sale with ID {command.Id} not found");
-
-        // Check if sale is cancelled
-        if (sale.Status == Domain.Enums.SaleStatus.Cancelled)
-            throw new InvalidOperationException("Cannot update a cancelled sale");
 
         // Update sale properties
         sale.CustomerId = command.CustomerId;
@@ -88,6 +89,10 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         // Save the updated sale
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
+        
+        // Publish SaleModified event to message broker
+        await _messageBrokerService.PublishAsync(new SaleModifiedEvent(updatedSale), cancellationToken);
+        
         var result = _mapper.Map<UpdateSaleResult>(updatedSale);
         return result;
     }

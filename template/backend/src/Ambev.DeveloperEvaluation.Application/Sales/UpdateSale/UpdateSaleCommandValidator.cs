@@ -27,27 +27,19 @@ public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
 
         RuleFor(sale => sale.CustomerId)
             .NotEmpty()
-            .WithMessage("Customer ID is required")
-            .MaximumLength(50)
-            .WithMessage("Customer ID must not exceed 50 characters");
+            .WithMessage("Customer ID is required");
 
         RuleFor(sale => sale.CustomerName)
             .NotEmpty()
-            .WithMessage("Customer name is required")
-            .MaximumLength(200)
-            .WithMessage("Customer name must not exceed 200 characters");
+            .WithMessage("Customer name is required");
 
         RuleFor(sale => sale.BranchId)
             .NotEmpty()
-            .WithMessage("Branch ID is required")
-            .MaximumLength(50)
-            .WithMessage("Branch ID must not exceed 50 characters");
+            .WithMessage("Branch ID is required");
 
         RuleFor(sale => sale.BranchName)
             .NotEmpty()
-            .WithMessage("Branch name is required")
-            .MaximumLength(200)
-            .WithMessage("Branch name must not exceed 200 characters");
+            .WithMessage("Branch name is required");
 
         RuleFor(sale => sale.Items)
             .NotEmpty()
@@ -77,15 +69,11 @@ public class UpdateSaleItemCommandValidator : AbstractValidator<UpdateSaleItemCo
     {
         RuleFor(item => item.ProductId)
             .NotEmpty()
-            .WithMessage("Product ID is required")
-            .MaximumLength(50)
-            .WithMessage("Product ID must not exceed 50 characters");
+            .WithMessage("Product ID is required");
 
         RuleFor(item => item.ProductName)
             .NotEmpty()
-            .WithMessage("Product name is required")
-            .MaximumLength(200)
-            .WithMessage("Product name must not exceed 200 characters");
+            .WithMessage("Product name is required");
 
         RuleFor(item => item.Quantity)
             .GreaterThan(0)

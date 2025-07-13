@@ -25,18 +25,8 @@ public class GetSalesCommandValidator : AbstractValidator<GetSalesCommand>
 
         RuleFor(command => command.Size)
             .GreaterThan(0)
-            .WithMessage("Size must be greater than 0")
-            .LessThanOrEqualTo(100)
-            .WithMessage("Size must not exceed 100");
+            .WithMessage("Size must be greater than 0");
 
-        RuleFor(command => command.CustomerId)
-            .MaximumLength(50)
-            .WithMessage("Customer ID must not exceed 50 characters")
-            .When(command => !string.IsNullOrEmpty(command.CustomerId));
 
-        RuleFor(command => command.BranchId)
-            .MaximumLength(50)
-            .WithMessage("Branch ID must not exceed 50 characters")
-            .When(command => !string.IsNullOrEmpty(command.BranchId));
     }
 } 

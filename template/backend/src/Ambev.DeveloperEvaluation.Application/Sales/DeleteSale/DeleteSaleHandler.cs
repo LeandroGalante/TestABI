@@ -2,6 +2,8 @@ using AutoMapper;
 using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Common.MessageBroker;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 
@@ -11,14 +13,17 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
+    private readonly IMessageBrokerService _messageBrokerService;
 
     /// <summary>
     /// Initializes a new instance of DeleteSaleHandler
     /// </summary>
     /// <param name="saleRepository">The sale repository</param>
-    public DeleteSaleHandler(ISaleRepository saleRepository)
+    /// <param name="messageBrokerService">The message broker service for publishing events</param>
+    public DeleteSaleHandler(ISaleRepository saleRepository, IMessageBrokerService messageBrokerService)
     {
         _saleRepository = saleRepository;
+        _messageBrokerService = messageBrokerService;
     }
 
     /// <summary>
@@ -35,9 +40,9 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var deleted = await _saleRepository.DeleteAsync(command.Id, cancellationToken);
+        var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         
-        if (!deleted)
+        if (sale == null)
         {
             return new DeleteSaleResult
             {
@@ -46,10 +51,19 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
             };
         }
 
+        // Cancel the sale instead of deleting it
+        sale.Cancel();
+        
+        // Update the sale with cancelled status
+        await _saleRepository.UpdateAsync(sale, cancellationToken);
+        
+        // Publish SaleCancelled event to message broker
+        await _messageBrokerService.PublishAsync(new SaleCancelledEvent(sale, "Sale cancelled via delete operation"), cancellationToken);
+
         return new DeleteSaleResult
         {
             Success = true,
-            Message = "Sale deleted successfully"
+            Message = "Sale cancelled successfully"
         };
     }
 } 

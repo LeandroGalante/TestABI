@@ -92,9 +92,6 @@ public class Sale : BaseEntity
         if (item == null)
             throw new ArgumentNullException(nameof(item));
         
-        if (Status == SaleStatus.Cancelled)
-            throw new InvalidOperationException("Cannot add items to a cancelled sale");
-        
         item.SaleId = Id;
         item.ApplyDiscount();
         Items.Add(item);
@@ -107,9 +104,6 @@ public class Sale : BaseEntity
     /// <param name="itemId">The ID of the item to remove</param>
     public void RemoveItem(Guid itemId)
     {
-        if (Status == SaleStatus.Cancelled)
-            throw new InvalidOperationException("Cannot remove items from a cancelled sale");
-        
         var item = Items.FirstOrDefault(i => i.Id == itemId);
         if (item != null)
         {
@@ -133,9 +127,6 @@ public class Sale : BaseEntity
     /// <param name="itemId">The ID of the item to cancel</param>
     public void CancelItem(Guid itemId)
     {
-        if (Status == SaleStatus.Cancelled)
-            throw new InvalidOperationException("Cannot cancel items in a cancelled sale");
-        
         var item = Items.FirstOrDefault(i => i.Id == itemId);
         if (item != null)
         {

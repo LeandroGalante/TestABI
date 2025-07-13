@@ -3,6 +3,8 @@ using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Common.MessageBroker;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -13,16 +15,19 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IMessageBrokerService _messageBrokerService;
 
     /// <summary>
     /// Initializes a new instance of CreateSaleHandler
     /// </summary>
     /// <param name="saleRepository">The sale repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    /// <param name="messageBrokerService">The message broker service for publishing events</param>
+    public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper, IMessageBrokerService messageBrokerService)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _messageBrokerService = messageBrokerService;
     }
 
     /// <summary>
@@ -38,11 +43,6 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
-
-        // Check if sale number already exists
-        var existingSale = await _saleRepository.GetBySaleNumberAsync(command.SaleNumber, cancellationToken);
-        if (existingSale != null)
-            throw new InvalidOperationException($"Sale with number {command.SaleNumber} already exists");
 
         // Create the sale entity
         var sale = new Sale
@@ -82,6 +82,10 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
 
         // Save the sale
         var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
+        
+        // Publish SaleCreated event to message broker
+        await _messageBrokerService.PublishAsync(new SaleCreatedEvent(createdSale), cancellationToken);
+        
         var result = _mapper.Map<CreateSaleResult>(createdSale);
         return result;
     }
