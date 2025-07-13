@@ -4,7 +4,7 @@ Quick guide to run and test the Sales API in minutes.
 
 ## ⚡ Setup and Run
 
-### Visual Studio (Recommended)
+### ✅ Visual Studio (Recommended - Works!)
 ```bash
 # 1. Open solution in Visual Studio
 start Ambev.DeveloperEvaluation.sln
@@ -13,8 +13,12 @@ start Ambev.DeveloperEvaluation.sln
 # 3. Press F5 (Debug)
 ```
 
-### Docker
+**This will start the API on `https://localhost:7080`**
+
+### ❌ Docker (Has Issues)
 ```bash
+# Known issues with container not staying up
+# Use Visual Studio instead
 docker-compose up --build
 ```
 
@@ -60,15 +64,15 @@ curl -X GET "https://localhost:7080/api/sales?page=1&size=10"
 
 - **API**: `https://localhost:7080/api/sales`
 - **Swagger**: `https://localhost:7080/swagger`
-- **Docker API**: `http://localhost:5000/api/sales`
+- **Health**: `https://localhost:7080/health`
 
 ## 📋 Quick Check
 
-- [ ] ✅ Application running
+- [ ] ✅ Visual Studio running (F5)
 - [ ] ✅ Create sale successfully
 - [ ] ✅ Discounts applied correctly
 - [ ] ✅ Events logged in console
 - [ ] ✅ List sales working
 - [ ] ✅ Error for 21+ items
 
-**🎉 Done! The Sales API is working perfectly!** 
+**🎉 Done! Use Visual Studio - it works perfectly!** 
