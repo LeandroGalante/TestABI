@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
+using System.Text.Json.Serialization;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -22,32 +23,27 @@ public class SaleItem : BaseEntity
     public string ProductId { get; set; } = string.Empty;
     
     /// <summary>
-    /// Gets or sets the product name.
-    /// Denormalized from the product domain for performance.
+    /// Gets or sets the product name (denormalized for performance).
     /// </summary>
     public string ProductName { get; set; } = string.Empty;
     
     /// <summary>
-    /// Gets or sets the quantity of the product being sold.
-    /// Must be greater than 0 and not exceed 20 items per business rules.
+    /// Gets or sets the quantity of the product in this sale.
     /// </summary>
     public int Quantity { get; set; }
     
     /// <summary>
     /// Gets or sets the unit price of the product.
-    /// Must be greater than 0.
     /// </summary>
     public decimal UnitPrice { get; set; }
     
     /// <summary>
-    /// Gets or sets the discount percentage applied to this item.
-    /// Calculated based on quantity business rules.
+    /// Gets or sets the discount percentage applied to this item (0-100).
     /// </summary>
     public decimal Discount { get; set; }
     
     /// <summary>
-    /// Gets the total amount for this item after applying discounts.
-    /// Calculated as: (Quantity * UnitPrice) * (1 - Discount/100)
+    /// Gets the total amount for this item after applying discount.
     /// </summary>
     public decimal TotalAmount => (Quantity * UnitPrice) * (1 - Discount / 100);
     
@@ -57,8 +53,9 @@ public class SaleItem : BaseEntity
     public bool IsCancelled { get; set; }
     
     /// <summary>
-    /// Navigation property to the parent sale.
+    /// Navigation property to the sale this item belongs to.
     /// </summary>
+    [JsonIgnore]
     public virtual Sale Sale { get; set; } = null!;
     
     /// <summary>

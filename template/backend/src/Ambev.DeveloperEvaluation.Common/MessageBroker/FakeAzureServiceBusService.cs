@@ -39,7 +39,9 @@ public class FakeAzureServiceBusService : IMessageBrokerService
             var messageId = Guid.NewGuid();
             var messageBody = JsonSerializer.Serialize(domainEvent, new JsonSerializerOptions 
             { 
-                WriteIndented = true 
+                WriteIndented = true,
+                ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             });
             
             _logger.LogInformation(
