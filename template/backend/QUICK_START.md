@@ -4,7 +4,7 @@ Quick guide to run and test the Sales API in minutes.
 
 ## ⚡ Setup and Run
 
-### ✅ Visual Studio (Recommended - Works!)
+### Visual Studio
 ```bash
 # 1. Open solution in Visual Studio
 start Ambev.DeveloperEvaluation.sln
@@ -13,20 +13,13 @@ start Ambev.DeveloperEvaluation.sln
 # 3. Press F5 (Debug)
 ```
 
-**This will start the API on `https://localhost:7080`**
-
-### ❌ Docker (Has Issues)
-```bash
-# Known issues with container not staying up
-# Use Visual Studio instead
-docker-compose up --build
-```
+**API will be available at: `https://localhost:7181`**
 
 ## 🎯 Test Endpoints
 
-### Create Sale (POST)
+### Create Sale
 ```bash
-curl -X POST "https://localhost:7080/api/sales" \
+curl -k -X POST "https://localhost:7181/api/sales" \
 -H "Content-Type: application/json" \
 -d '{
   "saleNumber": "SALE-001",
@@ -46,12 +39,17 @@ curl -X POST "https://localhost:7080/api/sales" \
 }'
 ```
 
-### List Sales (GET)
+### List Sales
 ```bash
-curl -X GET "https://localhost:7080/api/sales?page=1&size=10"
+curl -k -X GET "https://localhost:7181/api/sales?page=1&size=10"
 ```
 
-## 📊 Business Rules Testing
+### Health Check
+```bash
+curl -k -X GET "https://localhost:7181/health"
+```
+
+## 📊 Business Rules
 
 | Quantity | Expected Discount |
 |----------|-------------------|
@@ -62,17 +60,10 @@ curl -X GET "https://localhost:7080/api/sales?page=1&size=10"
 
 ## 🔧 Important URLs
 
-- **API**: `https://localhost:7080/api/sales`
-- **Swagger**: `https://localhost:7080/swagger`
-- **Health**: `https://localhost:7080/health`
+- **API**: `https://localhost:7181/api/sales`
+- **Swagger**: `https://localhost:7181/swagger`
+- **Health**: `https://localhost:7181/health`
 
-## 📋 Quick Check
+**Note**: Use `-k` flag in curl to skip SSL certificate verification for development.
 
-- [ ] ✅ Visual Studio running (F5)
-- [ ] ✅ Create sale successfully
-- [ ] ✅ Discounts applied correctly
-- [ ] ✅ Events logged in console
-- [ ] ✅ List sales working
-- [ ] ✅ Error for 21+ items
-
-**🎉 Done! Use Visual Studio - it works perfectly!** 
+**🎉 Done! Press F5 in Visual Studio and test with curl commands above.** 
